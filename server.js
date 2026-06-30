@@ -23,17 +23,15 @@ app.post('/evaluate', async (req, res) => {
 
     const wordCount = essay.trim() === "" ? 0 : essay.trim().split(/\s+/).length;
 
-    // Крутой и строгий промпт для точной калибровки оценок
     const systemInstruction = `
       You are an official, strict, and highly critical IELTS Writing examiner. 
       Your task is to evaluate the provided IELTS Writing Task 2 essay strictly according to the official public band descriptors.
       
       CRITICAL EVALUATION RULES:
-      1. DO NOT be overly generous or nice. Be completely realistic. If an essay is a 5.5, grade it strictly as a 5.5.
-      2. Evaluate each of the 4 criteria independently. It is highly unusual for an essay to get the exact same score across all 4 criteria unless the performance is completely identical.
-      3. For all scores, use official IELTS formats (e.g., 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0). 
-      4. The essay has exactly ${wordCount} words. If it is under 250 words, apply a heavy penalty to the Task Achievement score according to official guidelines.
-      5. Base your feedback on grammatical accuracy, sentence variety, vocabulary precision, and logical progression.
+      1. DO NOT be overly generous. Be completely realistic.
+      2. Evaluate each of the 4 criteria independently.
+      3. For all scores, use official IELTS formats (e.g., 5.0, 5.5, 6.0, 6.5, 7.0). 
+      4. The essay has exactly ${wordCount} words. If it is under 250 words, apply a penalty to the Task Achievement score.
     `;
 
     const response = await ai.models.generateContent({
@@ -44,18 +42,18 @@ app.post('/evaluate', async (req, res) => {
       `,
       config: {
         systemInstruction: systemInstruction,
-        temperature: 0.1, // Снизили до 0.1 для максимальной точности и исключения фантазий
+        temperature: 0.1, 
         responseMimeType: 'application/json',
         responseSchema: {
           type: Type.OBJECT,
           properties: {
             overallScore: { 
               type: Type.STRING, 
-              description: "The final calculated official IELTS overall band score (e.g., a single value like 5.5 or 6.0 based on standard IELTS averaging rules)." 
+              description: "Temporary placeholder for overall score." 
             },
             summary: { 
               type: Type.STRING, 
-              description: "A brutally honest and constructive summary of the essay's real performance." 
+              description: "A constructive summary of the essay's real performance." 
             },
             criteria: {
               type: Type.ARRAY,
@@ -65,14 +63,14 @@ app.post('/evaluate', async (req, res) => {
                 properties: {
                   name: { type: Type.STRING, description: "Official IELTS criterion name." },
                   score: { type: Type.STRING, description: "The strict band score assigned to this specific criterion." },
-                  feedback: { type: Type.STRING, description: "Specific reasons, flaws, or strengths that justify this exact score." }
+                  feedback: { type: Type.STRING, description: "Specific reasons justifying this exact score." }
                 },
                 required: ["name", "score", "feedback"]
               }
             },
             improvements: {
               type: Type.ARRAY,
-              description: "3-4 highly specific, actionable steps to fix the errors noticed in this essay.",
+              description: "3-4 highly specific steps to fix the errors noticed.",
               items: { type: Type.STRING }
             }
           },
@@ -81,7 +79,39 @@ app.post('/evaluate', async (req, res) => {
       }
     });
 
+  
     const resultJson = JSON.parse(response.text);
+
+   
+    if (resultJson.criteria && Array.isArray(resultJson.criteria)) {
+    
+      const scores = resultJson.criteria
+        .map(c => parseFloat(c.score))
+        .filter(s => !isNaN(s));
+
+      if (scores.length === 4) {
+        const sum = scores.reduce((a, b) => a + b, 0);
+        const avg = sum / 4; 
+        
+        const intPart = Math.floor(avg); 
+        const fraction = avg - intPart;  
+
+        let officialOverall;
+
+        if (fraction < 0.25) {
+          officialOverall = intPart;        
+        } else if (fraction < 0.75) {
+          officialOverall = intPart + 0.5;  
+        } else {
+          officialOverall = Math.ceil(avg); 
+        }
+
+
+        resultJson.overallScore = officialOverall.toFixed(1);
+      }
+    }
+
+
     res.json(resultJson);
 
   } catch (error) {

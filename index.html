@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IELTS Ascent</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #077FFF;
+      --primary-hover: #0066cc;
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text-main: #1E293B;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'DM Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+
+    header {
+      width: 100%;
+      max-width: 1000px;
+      padding: 40px 20px 30px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+    }
+
+    /* === Красивый Pill Toggle на 3 колонки === */
+    .toggle-container {
+      position: relative;
+      display: flex;
+      background: var(--card-bg);
+      padding: 6px;
+      border-radius: 50px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border);
+      width: 560px;
+      max-width: 100%;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      width: calc((100% - 12px) / 3);
+      height: calc(100% - 12px);
+      background-color: var(--primary);
+      border-radius: 40px;
+      transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      z-index: 1;
+    }
+
+    .toggle-btn {
+      flex: 1;
+      padding: 12px 0;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      z-index: 2;
+      color: var(--text-muted);
+      transition: color 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .toggle-btn.active {
+      color: #fff;
+    }
+
+    .star-icon {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+    }
+
+    .check-icon {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    main {
+      width: 100%;
+      max-width: 1000px;
+      padding: 0 20px 40px;
+      flex: 1;
+    }
+
+    /* === Анимация переключения === */
+    .view-section {
+      display: none;
+      animation: fadeIn 0.4s ease-in-out;
+    }
+    .view-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-header h2 {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .month-badge {
+      background: rgba(7, 127, 255, 0.1);
+      color: var(--primary);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .test-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: space-between;
+      min-height: 130px;
+    }
+
+    .test-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: 0 12px 24px rgba(7, 127, 255, 0.08);
+    }
+
+    .card-tag {
+      font-size: 11px;
+      color: var(--primary);
+      background: rgba(7, 127, 255, 0.08);
+      padding: 4px 8px;
+      border-radius: 6px;
+      width: fit-content;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1.4;
+      color: var(--text-main);
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .back-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      transition: color 0.2s;
+    }
+    .back-btn:hover { color: var(--primary); }
+
+    .word-count-badge {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 12px;
+      background: #f1f5f9;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+
+    .input-group { margin-bottom: 24px; }
+    .input-group label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text-main);
+      font-size: 16px;
+    }
+    textarea {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-main);
+      resize: vertical;
+      transition: border-color 0.3s;
+      outline: none;
+    }
+    textarea:focus { border-color: var(--primary); }
+    
+    textarea[readonly] {
+      background-color: #F8FAFC;
+      color: var(--text-muted);
+      cursor: not-allowed;
+      resize: none;
+    }
+    textarea[readonly]:focus { border-color: var(--border); }
+
+    .eval-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.3s;
+      margin-top: 10px;
+    }
+    .eval-btn:hover { background: var(--primary-hover); }
+    .eval-btn:disabled {
+      background: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.3);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+      animation: modalFadeIn 0.3s ease;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 680px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+      padding: 32px;
+      position: relative;
+      animation: modalSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes modalSlideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: #F1F5F9;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .modal-close:hover {
+      background: #E2E8F0;
+      color: var(--text-main);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+    }
+
+    .score-container {
+      background: var(--primary);
+      color: white;
+      min-width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(7, 127, 255, 0.25);
+    }
+
+    .score-value {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .score-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      opacity: 0.9;
+      margin-top: 2px;
+    }
+
+    .modal-title h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .modal-title p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .modal-section {
+      margin-bottom: 26px;
+    }
+
+    .modal-section h3 {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .summary-text {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text-main);
+    }
+
+    .criterion-item {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+    }
+
+    .criterion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .criterion-badge {
+      background: #E2E8F0;
+      color: var(--text-main);
+      padding: 3px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+
+    .criterion-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .improvements-list {
+      list-style: none;
+    }
+
+    .improvements-list li {
+      position: relative;
+      padding-left: 26px;
+      margin-bottom: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-main);
+    }
+
+    .improvements-list li::before {
+      content: "→";
+      position: absolute;
+      left: 2px;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .cards-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .cards-grid { grid-template-columns: 1fr; }
+      .toggle-container { width: 100%; }
+      .toggle-btn { font-size: 12px; padding: 10px 0; gap: 4px; }
+      .modal-card { padding: 24px; }
+      .modal-header { flex-direction: column; text-align: center; gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>IELTS Ascent</h1>
+    <div class="toggle-container">
+      <div class="toggle-slider" id="toggleSlider"></div>
+      <button class="toggle-btn active" id="btnRecent" onclick="switchTab('recent')">
+        <svg class="check-icon" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+        Recent Tests
+      </button>
+      <button class="toggle-btn" id="btnOfficial" onclick="switchTab('official')">
+        <span class="star-icon">★</span> Official Tests
+      </button>
+      <button class="toggle-btn" id="btnEvaluate" onclick="switchTab('evaluate')">
+        <svg class="check-icon" viewBox="0 0 24 24">
+          <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+        </svg>
+        Custom Essay!
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section id="view-recent" class="view-section active">
+      <div class="section-header">
+        <h2>Recent Tests</h2>
+        <span class="month-badge">May, 2026</span>
+      </div>
+      <div class="cards-grid" id="cardsContainer"></div>
+    </section>
+
+    <section id="view-official" class="view-section">
+      </section>
+
+    <section id="view-detail" class="view-section">
+      <button class="back-btn" onclick="goBackToPreviousTab()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back
+      </button>
+      
+      <div class="input-group">
+        <label>Task Prompt / Topic</label>
+        <textarea id="detailTopic" rows="3" readonly></textarea>
+      </div>
+
+      <div class="input-group">
+        <label>Your Essay</label>
+        <textarea id="detailAnswer" rows="10" placeholder="Type or paste your essay for this selected topic here..." oninput="updateDetailWordCount()"></textarea>
+        <div class="word-count-badge" id="detailWordCount">0 words</div>
+      </div>
+      
+      <button class="eval-btn" id="detailEvalBtn" onclick="submitDetailEvaluation()">Evaluate Essay</button>
+    </section>
+
+    <section id="view-evaluate" class="view-section">
+      <div class="input-group">
+        <label>Task Prompt / Topic</label>
+        <textarea id="evalTopic" rows="3" placeholder="Enter the IELTS Writing Task 2 prompt here..."></textarea>
+      </div>
+      <div class="input-group">
+        <label>Your Essay</label>
+        <textarea id="evalEssay" rows="10" placeholder="Type or paste your essay here..." oninput="updateEvalWordCount()"></textarea>
+        <div class="word-count-badge" id="evalWordCountCounter">0 words</div>
+      </div>
+      <button class="eval-btn" id="evalBtn" onclick="submitEvaluation()">Evaluate Essay</button>
+    </section>
+  </main>
+
+  <div id="resultModal" class="modal-overlay">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      
+      <div class="modal-header">
+        <div class="score-container">
+          <div class="score-value" id="modalScore">7.0</div>
+          <div class="score-label">Band</div>
+        </div>
+        <div class="modal-title">
+          <h2>AI Feedback Report</h2>
+          <p>IELTS Writing Task 2 Comprehensive Review</p>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-section">
+          <h3>Summary Evaluation</h3>
+          <p class="summary-text" id="modalSummary"></p>
+        </div>
+
+        <div class="modal-section">
+          <h3>Criteria Breakdown</h3>
+          <div id="modalCriteriaList"></div>
+        </div>
+
+        <div class="modal-section">
+          <h3>Key Improvements</h3>
+          <ul class="improvements-list" id="modalImprovementsList"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    
+    let currentSourceTab = 'recent';
+
+    // === Recent Tests ===
+    const recentTests = [
+      { tag: "Task 2 • Agree/Disagree", prompt: "Some people think that the government should spend money on children to take part in sport and art classes in schools, while others think they should spend on professional sports events and public art performances. To what extent do you agree or disagree?" },
+      { tag: "Task 2 • Discuss Both Views", prompt: "Scientists agree that people are damaging their health by eating too much junk food. Some people think that the answer to this problem is to educate people. Others think education will not work. Discuss both views and give your own opinion." },
+      { tag: "Task 2 • Agree/Disagree", prompt: "Some people believe that scientific research done today is a waste of time and money. To what extent do you agree or disagree?" },
+      { tag: "Task 2 • Direct Question", prompt: "In today's world of advanced science and technology, we still greatly value our artists such as musicians, painters and writers. What can arts tell us about life that science and technology cannot?" },
+      { tag: "Task 2 • Agree/Disagree", prompt: "The older generations tend to have very traditional ideas about how people should live, think and behave. However, some people believe that these ideas are not helpful in preparing younger generations for modern life. To what extent do you agree or disagree with this view?" },
+      { tag: "Task 2 • Causes & Solutions", prompt: "Scientists tell us some activities are good for health and others are bad. Despite knowing that, millions of people continue doing unhealthy activities. What are the causes and what are the solutions?" },
+      { tag: "Task 2 • Discuss Both Views", prompt: "Some people believe that studying at university or college is the best route to a successful career, while others believe that it is better to get a job straight after school. Discuss both views and give your opinion." },
+      { tag: "Task 2 • Positive/Negative", prompt: "More and more people today are spending large amounts of money on their appearance in order to look younger. Why do people want to look younger? Do you think this is a positive or negative development?" }
+    ];
+
+    // === Official Tests===
+    const officialTests = [
+      // Cambridge 21
+      { book: "Cambridge 21", tag: "Task 2 • Agree/Disagree", prompt: "The best way to provide enough homes in large cities is to build tall apartment blocks. To what extent do you agree or disagree with this statement?" },
+      { book: "Cambridge 21", tag: "Task 2 • Discuss Both Views", prompt: "Some people say that in the digital age, theatres and cinemas are no longer important as people can watch all the entertainment they want online. Others argue that theatres and cinemas are still important both economically and culturally. Discuss both these views and give your own opinion." },
+      { book: "Cambridge 21", tag: "Task 2 • Outweigh", prompt: "All university undergraduate courses should include a period of time spent studying abroad or doing a work placement. Do you think the advantages of this would outweigh the disadvantages?" },
+      { book: "Cambridge 21", tag: "Task 2 • Two-part Question", prompt: "Some people argue that primary schools focus too much on formal learning. To what extent do you agree with this opinion? How important do you think it is for children to play as well as learn in the primary school classroom?" },
+      
+      // Cambridge 20
+      { book: "Cambridge 20", tag: "Task 2 • Agree/Disagree", prompt: "Access to clean water is a basic human right. Therefore, every home should have a water supply that is provided free of charge. Do you agree or disagree?" },
+      { book: "Cambridge 20", tag: "Task 2 • Two-part Question", prompt: "In many countries, primary and secondary schools close for two months or more in the summer holidays. What is the value of long school holidays? What are the arguments in favour of shorter school holidays?" },
+      { book: "Cambridge 20", tag: "Task 2 • Outweigh", prompt: "Some people have decided to reduce the number of times they fly every year or to stop flying altogether. Do you think the environmental benefits of this development outweigh the disadvantages for individuals and businesses?" },
+      { book: "Cambridge 20", tag: "Task 2 • Two-part Question", prompt: "Many aspects of the way people dress today are influenced by global fashion trends. How has global fashion become such a strong influence on people’s lives? Do you think this is a positive or negative development?" },
+
+      // Cambridge 19
+      { book: "Cambridge 19", tag: "Task 2 • Discuss Both Views", prompt: "Some people think that competition at work, at school and in daily life is a good thing. Others believe that we should try to cooperate more, rather than competing against each other. Discuss both these views and give your own opinion." },
+      { book: "Cambridge 19", tag: "Task 2 • Agree/Disagree", prompt: "The working week should be shorter and workers should have a longer weekend. Do you agree or disagree?" },
+      { book: "Cambridge 19", tag: "Task 2 • Agree/Disagree", prompt: "It is important for everyone, including young people, to save money for their future. To what extent do you agree or disagree with this statement?" },
+      { book: "Cambridge 19", tag: "Task 2 • Positive/Negative", prompt: "In many countries nowadays, consumers can go to a supermarket and buy food produced all over the world. Do you think this is a positive or negative development?" },
+
+      // Cambridge 18
+      { book: "Cambridge 18", tag: "Task 2 • Agree/Disagree", prompt: "The most important aim of science should be to improve people’s lives. To what extent do you agree or disagree with this statement?" },
+      { book: "Cambridge 18", tag: "Task 2 • Discuss Both Views", prompt: "Some university students want to learn about other subjects in addition to their main subjects. Others believe it is more important to give all their time and attention to studying for a qualification. Discuss both these views and give your own opinion." },
+      { book: "Cambridge 18", tag: "Task 2 • Positive/Negative", prompt: "In many countries around the world, rural people are moving to cities, so the population in the countryside is decreasing. Do you think this is a positive or a negative development?" },
+      { book: "Cambridge 18", tag: "Task 2 • Outweigh", prompt: "In many countries, people are now living longer than ever before. Some people say an ageing population creates problems for governments. Other people think there are benefits if society has more elderly people. To what extent do the advantages of having an ageing population outweigh the disadvantages?" },
+
+      // Cambridge 17
+      { book: "Cambridge 17", tag: "Task 2 • Outweigh", prompt: "It is important for people to take risks, both in their professional lives and their personal lives. Do you think the advantages of taking risks outweigh the disadvantages?" },
+      { book: "Cambridge 17", tag: "Task 2 • Two-part Question", prompt: "Some children spend hours every day on their smartphones. Why is this the case? Do you think this is a positive or a negative development?" },
+      { book: "Cambridge 17", tag: "Task 2 • Discuss Both Views", prompt: "Some people believe that professionals, such as doctors and engineers, should be required to work in the country where they did their training. Others believe they should be free to work in another country if they wish. Discuss both these views and give your own opinion." },
+      { book: "Cambridge 17", tag: "Task 2 • Positive/Negative", prompt: "Nowadays, a growing number of people with health problems are trying alternative medicines and treatments instead of visiting their usual doctor. Do you think this is a positive or a negative development?" },
+
+      // Cambridge 16
+      { book: "Cambridge 16", tag: "Task 2 • Two-part Question", prompt: "In some countries, more and more people are becoming interested in finding out about the history of the house or building they live in. What are the reasons for this? How can people research this?" },
+      { book: "Cambridge 16", tag: "Task 2 • Two-part Question", prompt: "In their advertising, businesses nowadays usually emphasise that their products are new in some way. Why is this? Do you think it is a positive or negative development?" },
+      { book: "Cambridge 16", tag: "Task 2 • Agree/Disagree", prompt: "Many manufactured food and drink products contain high levels of sugar, which causes many health problems. Sugary products should be made more expensive to encourage people to consume less sugar. Do you agree or disagree?" },
+      { book: "Cambridge 16", tag: "Task 2 • Outweigh", prompt: "In the future all cars, buses and trucks will be driverless. The only people travelling inside these vehicles will be passengers. Do you think the advantages of driverless vehicles outweigh the disadvantages?" }
+    ];
+
+    // === Recent Tests ===
+    const containerRecent = document.getElementById('cardsContainer');
+    recentTests.forEach((test) => {
+      const card = document.createElement('div');
+      card.className = 'test-card';
+      let shortPrompt = test.prompt.length > 75 ? test.prompt.substring(0, 72) + "..." : test.prompt;
+      card.innerHTML = `
+        <span class="card-tag">${test.tag}</span>
+        <h3 class="card-title">${shortPrompt}</h3>
+      `;
+      card.onclick = () => openTestDetail(test, 'recent');
+      containerRecent.appendChild(card);
+    });
+
+    // === Official Tests ===
+    const containerOfficial = document.getElementById('view-official');
+    const books = [...new Set(officialTests.map(t => t.book))]; // Получаем уникальные названия книг
+
+    books.forEach((book, index) => {
+
+      const header = document.createElement('div');
+      header.className = 'section-header';
+      // to not blocks get along
+      if (index !== 0) {
+        header.style.marginTop = '40px';
+      }
+      
+      header.innerHTML = `
+        <h2>${index === 0 ? 'Official Tests' : ''}</h2>
+        <span class="month-badge">${book} Tests</span>
+      `;
+      containerOfficial.appendChild(header);
+
+      // cards
+      const grid = document.createElement('div');
+      grid.className = 'cards-grid';
+      
+      const testsForBook = officialTests.filter(t => t.book === book);
+      testsForBook.forEach(test => {
+        const card = document.createElement('div');
+        card.className = 'test-card';
+        let shortPrompt = test.prompt.length > 75 ? test.prompt.substring(0, 72) + "..." : test.prompt;
+        card.innerHTML = `
+          <span class="card-tag">${test.tag}</span>
+          <h3 class="card-title">${shortPrompt}</h3>
+        `;
+        card.onclick = () => openTestDetail(test, 'official');
+        grid.appendChild(card);
+      });
+
+      containerOfficial.appendChild(grid);
+    });
+
+    function updateEvalWordCount() {
+      const text = document.getElementById('evalEssay').value.trim();
+      const words = text ? text.split(/\s+/).length : 0; 
+      document.getElementById('evalWordCountCounter').innerText = `${words} words`;
+    }
+
+    function updateDetailWordCount() {
+      const text = document.getElementById('detailAnswer').value.trim();
+      const words = text ? text.split(/\s+/).length : 0; 
+      document.getElementById('detailWordCount').innerText = `${words} words`;
+    }
+
+    function switchTab(tabName) {
+      const btnRecent = document.getElementById('btnRecent');
+      const btnOfficial = document.getElementById('btnOfficial');
+      const btnEvaluate = document.getElementById('btnEvaluate');
+      const slider = document.getElementById('toggleSlider');
+
+      btnRecent.classList.remove('active');
+      btnOfficial.classList.remove('active');
+      btnEvaluate.classList.remove('active');
+
+      if (tabName === 'recent') {
+        btnRecent.classList.add('active');
+        slider.style.transform = 'translateX(0%)';
+        showSection('view-recent');
+        currentSourceTab = 'recent';
+      } else if (tabName === 'official') {
+        btnOfficial.classList.add('active');
+        slider.style.transform = 'translateX(100%)';
+        showSection('view-official');
+        currentSourceTab = 'official';
+      } else {
+        btnEvaluate.classList.add('active');
+        slider.style.transform = 'translateX(200%)';
+        showSection('view-evaluate');
+      }
+    }
+
+    function showSection(sectionId) {
+      document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(sectionId).classList.add('active');
+    }
+
+    function openTestDetail(test, source) {
+      document.getElementById('detailTopic').value = test.prompt;
+      document.getElementById('detailAnswer').value = "";
+      updateDetailWordCount();
+      
+      // back button
+      const backBtn = document.querySelector('.back-btn');
+      if (source === 'official') {
+        backBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> Back to Official Tests`;
+      } else {
+        backBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> Back to Recent Tests`;
+      }
+      
+      showSection('view-detail');
+    }
+
+    function goBackToPreviousTab() {
+      if (currentSourceTab === 'official') {
+        showSection('view-official');
+      } else {
+        showSection('view-recent');
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('resultModal').style.display = 'none';
+    }
+
+    // === Parcing ===
+    function populateAndShowModal(data) {
+      const rawScore = data.overallScore || data.overallBand || data.score || data.band || "—";
+      document.getElementById('modalScore').innerText = rawScore;
+
+      const rawSummary = data.summary || data.overallFeedback || data.feedback || "Evaluation compiled successfully.";
+      document.getElementById('modalSummary').innerText = rawSummary;
+
+      const criteriaList = document.getElementById('modalCriteriaList');
+      criteriaList.innerHTML = "";
+      
+      let criteria = data.criteria || data.criteriaBreakdown || [];
+      
+      if (typeof criteria === 'object' && !Array.isArray(criteria)) {
+        criteria = Object.entries(criteria).map(([key, val]) => {
+          if (typeof val === 'object' && val !== null) {
+            return { name: key, ...val };
+          }
+          return { name: key, score: val };
+        });
+      }
+
+      if (Array.isArray(criteria) && criteria.length > 0) {
+        criteria.forEach(item => {
+          const itemEl = document.createElement('div');
+          itemEl.className = 'criterion-item';
+
+          let name = item.name || item.title || item.criterion || "Assessment Metric";
+          let score = item.score || item.band || "";
+          let desc = item.feedback || item.description || item.comment || "";
+
+          if (!desc && typeof item === 'object') {
+            desc = Object.entries(item)
+              .filter(([k]) => k !== 'name' && k !== 'score' && k !== 'title' && k !== 'band')
+              .map(([_, v]) => v).join(' ') || JSON.stringify(item);
+          }
+
+          itemEl.innerHTML = `
+            <div class="criterion-header">
+              <span>${name}</span>
+              ${score ? `<span class="criterion-badge">Band ${score}</span>` : ''}
+            </div>
+            <p class="criterion-desc">${desc}</p>
+          `;
+          criteriaList.appendChild(itemEl);
+        });
+      } else {
+        criteriaList.innerHTML = `<p class="criterion-desc">Detailed criteria breakdown is embedded in the summary evaluation.</p>`;
+      }
+
+      const improvementsList = document.getElementById('modalImprovementsList');
+      improvementsList.innerHTML = "";
+
+      let improvements = data.improvements || data.suggestions || data.weaknesses || [];
+      if (typeof improvements === 'string') {
+        improvements = [improvements];
+      }
+
+      if (Array.isArray(improvements) && improvements.length > 0) {
+        improvements.forEach(text => {
+          const li = document.createElement('li');
+          li.innerText = (typeof text === 'object') ? JSON.stringify(text) : text;
+          improvementsList.appendChild(li);
+        });
+      } else {
+        improvementsList.innerHTML = `<li>Your essay shows stable competence. Continue practice with alternative structures to solidify a higher band!</li>`;
+      }
+
+      document.getElementById('resultModal').style.display = 'flex';
+    }
+
+    // === backend send ===
+    async function sendToAIServer(topic, essay, btnElement) {
+      if(!topic.trim() || !essay.trim()) {
+        alert("Please make sure both fields are filled out!");
+        return;
+      }
+
+      btnElement.innerText = "Evaluating...";
+      btnElement.disabled = true;
+
+      try {
+        const response = await fetch("/evaluate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            taskPrompt: topic, 
+            essay: essay 
+          })
+        });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || "Oops! Too many requests, wait for some time..");
+        }
+
+        const data = await response.json();
+        populateAndShowModal(data);
+
+      } catch (err) {
+        console.error(err);
+        alert(err.message || "Oops! Connection dropped. Please try again.");
+      } finally {
+        btnElement.innerText = "Evaluate Essay";
+        btnElement.disabled = false;
+      }
+    }
+
+    function submitDetailEvaluation() {
+      const topic = document.getElementById('detailTopic').value;
+      const essay = document.getElementById('detailAnswer').value;
+      const btn = document.getElementById('detailEvalBtn');
+      sendToAIServer(topic, essay, btn);
+    }
+
+    function submitEvaluation() {
+      const topic = document.getElementById('evalTopic').value;
+      const essay = document.getElementById('evalEssay').value;
+      const btn = document.getElementById('evalBtn');
+      sendToAIServer(topic, essay, btn);
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('resultModal');
+      if (event.target == modal) {
+        closeModal();
+      }
+    }
+  </script>
+</body>
+</html>

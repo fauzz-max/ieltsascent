@@ -1,0 +1,10 @@
+{
+  "name": "ielts-assessment",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "@google/genai": "^2.10.0",
+    "dotenv": "^17.4.2",
+    "express": "^4.22.2"
+  }
+}

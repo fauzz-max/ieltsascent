@@ -41,7 +41,7 @@ app.post('/evaluate', async (req, res) => {
 
     // Запрос к Gemini с использованием Structured Outputs (JSON Schema)
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-1.5-flash',
       contents: `
         Task Prompt: "${taskPrompt}"
         Candidate's Essay: "${essay}"

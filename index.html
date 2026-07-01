@@ -33,7 +33,6 @@
       align-items: center;
     }
 
-
     header {
       width: 100%;
       max-width: 1000px;
@@ -172,6 +171,7 @@
       gap: 10px;
       justify-content: space-between;
       min-height: 130px;
+      word-wrap: break-word; /* Защита от слишком длинных слов */
     }
 
     .test-card:hover {
@@ -229,7 +229,6 @@
       font-size: 13px;
       font-weight: 600;
     }
-
 
     .input-group { margin-bottom: 24px; }
     .input-group label {
@@ -548,15 +547,12 @@
     <div class="modal-card">
       <button class="modal-close" onclick="closeModal()">&times;</button>
       
-<div class="score-container">
-  <div class="score-value" id="modalScore">7.0</div>
-  <div class="score-label">Band</div>
-</div>
+      <div class="modal-header">
+        <div class="score-container">
+          <div class="score-value" id="modalScore">7.0</div>
+          <div class="score-label">Band</div>
+        </div>
 
-<div class="score-container">
-  <div class="score-value" id="modalScore">—</div>
-  <div class="score-label">Band</div>
-</div>
         <div class="modal-title">
           <h2>AI Feedback Report</h2>
           <p>IELTS Writing Task 2 Comprehensive Review</p>
@@ -583,7 +579,6 @@
   </div>
 
   <script>
-    
     let currentSourceTab = 'recent';
 
     // === Recent Tests ===
@@ -653,13 +648,11 @@
 
     // === Official Tests ===
     const containerOfficial = document.getElementById('view-official');
-    const books = [...new Set(officialTests.map(t => t.book))]; // Получаем уникальные названия книг
+    const books = [...new Set(officialTests.map(t => t.book))];
 
     books.forEach((book, index) => {
-
       const header = document.createElement('div');
       header.className = 'section-header';
-      // to not blocks get along
       if (index !== 0) {
         header.style.marginTop = '40px';
       }
@@ -670,7 +663,6 @@
       `;
       containerOfficial.appendChild(header);
 
-      // cards
       const grid = document.createElement('div');
       grid.className = 'cards-grid';
       
@@ -739,7 +731,6 @@
       document.getElementById('detailAnswer').value = "";
       updateDetailWordCount();
       
-      // back button
       const backBtn = document.querySelector('.back-btn');
       if (source === 'official') {
         backBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> Back to Official Tests`;
@@ -762,7 +753,6 @@
       document.getElementById('resultModal').style.display = 'none';
     }
 
-    // === Parcing ===
     function populateAndShowModal(data) {
       const rawScore = data.overallScore || data.overallBand || data.score || data.band || "—";
       document.getElementById('modalScore').innerText = rawScore;
@@ -833,7 +823,6 @@
       document.getElementById('resultModal').style.display = 'flex';
     }
 
-    // === backend send ===
     async function sendToAIServer(topic, essay, btnElement) {
       if(!topic.trim() || !essay.trim()) {
         alert("Please make sure both fields are filled out!");
